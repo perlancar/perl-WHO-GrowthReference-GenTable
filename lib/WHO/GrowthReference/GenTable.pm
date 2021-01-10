@@ -1,4 +1,4 @@
-package WHO::GrowthReference::GenChart;
+package WHO::GrowthReference::GenTable;
 
 # AUTHORITY
 # DATE
@@ -128,6 +128,9 @@ sub add_who_growth_reference_fields_to_table {
         }
     }
 
+    my @orig_fields = sort keys %{ $aoh->[0] };
+
+    my $i = -1;
   ADD_FIELDS: {
         for my $row (@$aoh) {
             $i++;
@@ -148,6 +151,7 @@ sub add_who_growth_reference_fields_to_table {
             );
             return [400, "Table row[$i]: Cannot get WHO growth reference data: $res->[0] - $res->[1]"]
                 unless $res->[0] == 200;
+            #use DD; dd $res->[2];
             $row->{age_ym} = $res->[2]{age};
             if (defined $height_key) {
                 $row->{'height_potential'} = $res->[2]{height_potential};
@@ -184,7 +188,7 @@ sub add_who_growth_reference_fields_to_table {
         }
     } # ADD_FIELDS
 
-    [200, "OK", $aoh];
+    [200, "OK", $aoh, {'table.fields'=>[$date_key, $age_key, $height_key, $weight_key, @orig_fields]}];
 }
 
 1;
